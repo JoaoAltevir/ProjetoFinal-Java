@@ -1,6 +1,12 @@
 package entities;
 
 public class Medico {
-	protected
-	
+    private String crm;
+    private String nome;
+    private String endereco;
+    private String telefone;
+    private Especialidade especialidade;
+    
+    // Construtores, getters e setters
 }
+
