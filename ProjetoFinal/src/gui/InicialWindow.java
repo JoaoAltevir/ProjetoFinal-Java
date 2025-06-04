@@ -17,27 +17,33 @@ public class InicialWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
+	private JLabel lblNewLabel;
+	private JButton btnCadPaciente;
+	private JButton btnCadEspecialidade;
+	private JButton btnCadMedico;
+	private JButton btnAgendarConsulta;
+	private JButton btnAgendarExame;
+	private JButton btnExames;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					InicialWindow frame = new InicialWindow();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+
+	private void abrirJanelaPacientes() {
+		
+		PacienteWindow janelaPaciente = new PacienteWindow(this);
+		janelaPaciente.setVisible(true);
+		
+		this.setVisible(false);
+		
 	}
-
-	/**
-	 * Create the frame.
-	 */
+	
+	
+	
 	public InicialWindow() {
+		
+		this.initComponents();
+		
+	}
+	
+	public void initComponents() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 675, 575);
 		
@@ -52,46 +58,64 @@ public class InicialWindow extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JButton btnCadPaciente = new JButton("Cadastrar Pacientes");
-		btnCadPaciente.setBounds(225, 59, 154, 60);
+		btnCadPaciente = new JButton("Cadastrar Pacientes");
+		btnCadPaciente.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				abrirJanelaPacientes();
+			}
+		});
+		btnCadPaciente.setBounds(225, 59, 187, 60);
 		contentPane.add(btnCadPaciente);
 		
-		JButton btnCadEspecialidade = new JButton("Cadastrar Especialidade");
+		btnCadEspecialidade = new JButton("Cadastrar Especialidade");
 		btnCadEspecialidade.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnCadEspecialidade.setBounds(225, 134, 154, 60);
+		btnCadEspecialidade.setBounds(225, 134, 187, 60);
 		contentPane.add(btnCadEspecialidade);
 		
-		JButton btnCadMedico = new JButton("Cadastrar Médico");
-		btnCadMedico.setBounds(225, 206, 154, 60);
+		btnCadMedico = new JButton("Cadastrar Médico");
+		btnCadMedico.setBounds(225, 206, 187, 60);
 		contentPane.add(btnCadMedico);
 		
-		JButton btnAgendarConsulta = new JButton("Agendar Consulta");
+		btnAgendarConsulta = new JButton("Agendar Consulta");
 		btnAgendarConsulta.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnAgendarConsulta.setBounds(225, 280, 154, 60);
+		btnAgendarConsulta.setBounds(225, 280, 187, 60);
 		contentPane.add(btnAgendarConsulta);
 		
-		JButton btnAgendarExame = new JButton("Agendar Exame");
-		btnAgendarExame.setBounds(225, 358, 154, 60);
+		btnAgendarExame = new JButton("Agendar Exame");
+		btnAgendarExame.setBounds(225, 358, 187, 60);
 		contentPane.add(btnAgendarExame);
 		
-		JButton btnExames = new JButton("Exames");
-		btnExames.setBounds(225, 429, 154, 60);
+		btnExames = new JButton("Exames");
+		btnExames.setBounds(225, 429, 187, 60);
 		contentPane.add(btnExames);
 		
-		JLabel lblNewLabel = new JLabel("Olá! Seja Bem-Vindo ao sistema de saúde! ");
+		lblNewLabel = new JLabel("Olá! Seja Bem-Vindo ao sistema de saúde! ");
 		lblNewLabel.setFont(new Font("Yu Gothic Medium", Font.PLAIN, 14));
 		lblNewLabel.setBounds(170, 0, 310, 60);
 		contentPane.add(lblNewLabel);
 		
+		setLocationRelativeTo(null);
 	}
 	
-	public void initComponents() {
-		
+
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					InicialWindow frame = new InicialWindow();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
+
 }
