@@ -3,7 +3,7 @@ package entities;
 import java.sql.Date;
 
 public class Paciente {
-    private int id;
+	
     private String nome;
     private String foto;
     private Date dataNascimento;
