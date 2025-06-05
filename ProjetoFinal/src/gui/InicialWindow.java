@@ -33,9 +33,7 @@ public class InicialWindow extends JFrame {
 		
 		this.setVisible(false);
 		
-	}
-	
-	
+	}	
 	
 	public InicialWindow() {
 		
@@ -71,28 +69,48 @@ public class InicialWindow extends JFrame {
 		btnCadEspecialidade = new JButton("Cadastrar Especialidade");
 		btnCadEspecialidade.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//TODO telas: (Especialidade menu, tela de cadastro e apagr registro)
+				//abrirJanelaEspecialidade(); TODO implementar tela e seu metodo construtor
+				
 			}
 		});
 		btnCadEspecialidade.setBounds(225, 134, 187, 60);
 		contentPane.add(btnCadEspecialidade);
 		
 		btnCadMedico = new JButton("Cadastrar Médico");
+		btnCadMedico.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//TODO tela de médicos
+			}
+		});
 		btnCadMedico.setBounds(225, 206, 187, 60);
 		contentPane.add(btnCadMedico);
 		
 		btnAgendarConsulta = new JButton("Agendar Consulta");
 		btnAgendarConsulta.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                            //TODO tela de agendamento TELA DE CONSULTAS (listando todas as consultas), (cadastro de consulta), (apagar cadastro)
 			}
 		});
 		btnAgendarConsulta.setBounds(225, 280, 187, 60);
 		contentPane.add(btnAgendarConsulta);
 		
 		btnAgendarExame = new JButton("Agendar Exame");
+		btnAgendarExame.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//TODO telas (menu exames agendados), (cadastrar agenda de exame), (apagar agenda de exame)
+			}
+		});
 		btnAgendarExame.setBounds(225, 358, 187, 60);
 		contentPane.add(btnAgendarExame);
 		
 		btnExames = new JButton("Exames");
+		btnExames.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//TODO telas: (exames disponiveis no sistema), (cadastrar novo exame), (apagar exame)
+			}
+		});
 		btnExames.setBounds(225, 429, 187, 60);
 		contentPane.add(btnExames);
 		
