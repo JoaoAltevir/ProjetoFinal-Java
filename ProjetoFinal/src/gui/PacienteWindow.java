@@ -1,6 +1,7 @@
 package gui;
 
 import java.awt.EventQueue;
+import java.awt.JobAttributes.DefaultSelectionType;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -8,6 +9,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -15,6 +18,8 @@ import javax.swing.JButton;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -31,6 +36,7 @@ public class PacienteWindow extends JFrame {
 	private InicialWindow inicialWindow;
 	private JMenuItem mntmVoltar;
 	private JMenu mnArquivo;
+	private JButton btnEditar;
 	
 	public PacienteWindow(InicialWindow inicialWindow) {
 		
@@ -44,6 +50,14 @@ public class PacienteWindow extends JFrame {
 		this.initComponents();
 		this.inicialWindow = inicialWindow;
 		
+	}
+	
+	private void abrirJanelaEditar() {
+		
+		PacienteEditarWindow telaEditar = new PacienteEditarWindow(this);
+		telaEditar.setVisible(true);
+		
+		this.setVisible(false);
 	}
 	
 	private void abrirJanelaCadastro() {
@@ -106,6 +120,10 @@ public class PacienteWindow extends JFrame {
 				"Foto", "Nome", "Sexo", "Data Nascimento", "Telefone", "Forma Pagamento"
 			}
 		));
+		tblPacientes.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent event) {
+			}
+		});
 		
 		btnCadastrar = new JButton("Cadastrar Novo");
 		btnCadastrar.addActionListener(new ActionListener() {
@@ -119,6 +137,23 @@ public class PacienteWindow extends JFrame {
 		btnExcluir = new JButton("Apagar Registro");
 		btnExcluir.setBounds(294, 396, 152, 43);
 		contentPane.add(btnExcluir);
+		
+		btnEditar = new JButton("Editar Registro");
+		btnEditar.setEnabled(false);
+		btnEditar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int selectedRow = tblPacientes.getSelectedRow();
+				
+				if(selectedRow != -1) {
+					//pega os valores de das linhas
+				}else {
+					JOptionPane.showMessageDialog(null, "Por favor, selecione um registro para editar");
+				}
+				
+			}
+		});
+		btnEditar.setBounds(123, 396, 152, 43);
+		contentPane.add(btnEditar);
 		tblPacientes.getColumnModel().getColumn(3).setPreferredWidth(102);
 		tblPacientes.getColumnModel().getColumn(5).setPreferredWidth(108);
 		
