@@ -35,6 +35,15 @@ public class InicialWindow extends JFrame {
 		
 	}	
 	
+	private void abrirJanelaEspecialidade() {
+		
+		EspecialidadeWindow janelaEspecialidade = new EspecialidadeWindow(this);
+		janelaEspecialidade.setVisible(true);
+		
+		this.setVisible(false);
+		
+	}
+	
 	public InicialWindow() {
 		
 		this.initComponents();
@@ -69,7 +78,7 @@ public class InicialWindow extends JFrame {
 		btnCadEspecialidade = new JButton("Cadastrar Especialidade");
 		btnCadEspecialidade.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//TODO telas: (Especialidade menu, tela de cadastro e apagr registro)
+				abrirJanelaEspecialidade();
 				//abrirJanelaEspecialidade(); TODO implementar tela e seu metodo construtor
 				
 			}
