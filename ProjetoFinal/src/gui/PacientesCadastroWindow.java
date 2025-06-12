@@ -156,7 +156,7 @@ public class PacientesCadastroWindow extends JFrame {
 		painelDados.add(lblNome);
 		
 		painelSexo = new JPanel();
-		painelSexo.setBorder(new TitledBorder(null, "Sexo", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		painelSexo.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Sexo", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 		painelSexo.setBounds(23, 106, 129, 87);
 		painelDados.add(painelSexo);
 		painelSexo.setLayout(null);

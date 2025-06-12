@@ -44,6 +44,13 @@ public class InicialWindow extends JFrame {
 		
 	}
 	
+	private void abrirJanelaMedico() {
+		
+		MedicoWindow janelaMedico = new MedicoWindow(this);
+		janelaMedico.setVisible(true);
+		
+		this.setVisible(false);
+	}
 	public InicialWindow() {
 		
 		this.initComponents();
@@ -89,7 +96,7 @@ public class InicialWindow extends JFrame {
 		btnCadMedico = new JButton("Cadastrar Médico");
 		btnCadMedico.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//TODO tela de médicos
+				abrirJanelaMedico();
 			}
 		});
 		btnCadMedico.setBounds(225, 206, 187, 60);

@@ -132,6 +132,7 @@ public class PacienteEditarWindow extends JFrame {
 			System.out.println("ERRO: " + e.getMessage());
 		}
 	}
+	
 	private void fecharJanela() {
 		
 		this.dispose();
