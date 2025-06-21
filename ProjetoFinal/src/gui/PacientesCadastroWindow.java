@@ -67,6 +67,8 @@ public class PacientesCadastroWindow extends JFrame {
 	private final ButtonGroup bgSexo;
 
 	
+	//TODO inserir foto no cadastro
+	
 	public PacientesCadastroWindow(PacienteWindow pacienteWindow) {
 		
 		addWindowListener(new WindowAdapter() {
