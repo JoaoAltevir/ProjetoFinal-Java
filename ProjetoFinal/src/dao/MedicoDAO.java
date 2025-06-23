@@ -21,7 +21,7 @@ public class MedicoDAO {
 
         try {
             st = conn.prepareStatement(
-                "INSERT INTO Medico (crm, nome_medico, telefone, id_endereco, id_especialidade) VALUES (?, ?, ?, ?, ?)",
+                "INSERT INTO Medico (crm, nome_medico, telefone, fk_medico_endereco, fk_medico_especialidade) VALUES (?, ?, ?, ?, ?)",
                 Statement.RETURN_GENERATED_KEYS
             );
 
@@ -60,11 +60,11 @@ public class MedicoDAO {
                 m.setnome_medico(rs.getString("nome_medico"));
                 m.setTelefone(rs.getString("telefone"));
 
-                int id_endereco = rs.getInt("id_endereco");
+                int id_endereco = rs.getInt("fk_medico_endereco");
                 Endereco endereco = new EnderecoDAO(conn).buscarPorIdEndereco(id_endereco);
                 m.setEndereco(endereco);
 
-                int id_especialidade = rs.getInt("id_especialidade");
+                int id_especialidade = rs.getInt("fk_medico_especialidade");
                 Especialidade especialidade = new EspecialidadeDAO(conn).buscarPorIdEspecialidade(id_especialidade);
                 m.setEspecialidade(especialidade);
 
@@ -95,11 +95,11 @@ public class MedicoDAO {
                 m.setnome_medico(rs.getString("nome_medico"));
                 m.setTelefone(rs.getString("telefone"));
 
-                int id_endereco = rs.getInt("id_endereco");
+                int id_endereco = rs.getInt("fk_medico_endereco");
                 Endereco endereco = new EnderecoDAO(conn).buscarPorIdEndereco(id_endereco);
                 m.setEndereco(endereco);
 
-                int id_especialidade = rs.getInt("id_especialidade");
+                int id_especialidade = rs.getInt("fk_medico_especialidade");
                 Especialidade especialidade = new EspecialidadeDAO(conn).buscarPorIdEspecialidade(id_especialidade);
                 m.setEspecialidade(especialidade);
 
@@ -119,7 +119,7 @@ public class MedicoDAO {
 
         try {
             st = conn.prepareStatement(
-                "UPDATE Medico SET crm = ?, nome_medico = ?, telefone = ?, id_endereco = ?, id_especialidade = ? WHERE id_medico = ?"
+                "UPDATE Medico SET crm = ?, nome_medico = ?, telefone = ?, fk_medico_endereco = ?, fk_medico_especialidade = ? WHERE id_medico = ?"
             );
 
             st.setString(1, medico.getCrm());

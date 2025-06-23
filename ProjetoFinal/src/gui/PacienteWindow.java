@@ -4,6 +4,10 @@ import java.awt.EventQueue;
 import java.awt.JobAttributes.DefaultSelectionType;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -14,6 +18,10 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import entities.Paciente;
+import service.PacienteService;
+
 import javax.swing.JButton;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
@@ -37,6 +45,7 @@ public class PacienteWindow extends JFrame {
 	private JMenuItem mntmVoltar;
 	private JMenu mnArquivo;
 	private JButton btnEditar;
+	private PacienteService pacienteService;
 	
 	public PacienteWindow(InicialWindow inicialWindow) {
 		
@@ -47,19 +56,23 @@ public class PacienteWindow extends JFrame {
 			}
 		});
 		
-		this.initComponents();
+		this.pacienteService = new PacienteService();
 		this.inicialWindow = inicialWindow;
+		this.initComponents();
+		this.buscarTodos();
 		
 	}
 	
-//	private void abrirJanelaEditar() {
-//		
-//		PacienteEditarWindow telaEditar = new PacienteEditarWindow(this);
-//		//TODO mandar dados do paciente selecionado.
-//		telaEditar.setVisible(true);
-//		
-//		this.setVisible(false);
-//	}
+	//CHAMADA DAS OUTRAS JANELAS
+	
+	private void editarRegistro() {
+		
+		PacienteEditarWindow telaEditar = new PacienteEditarWindow(this);
+		telaEditar.setVisible(true);
+		
+		this.setVisible(false);
+		
+	}
 	
 	private void abrirJanelaCadastro() {
 		
@@ -70,12 +83,53 @@ public class PacienteWindow extends JFrame {
 		
 	}
 	
+	private void abrirJanelaApagar() {
+		
+		PacienteExcluirWindow telaExcluir = new PacienteExcluirWindow(this);
+		telaExcluir.setVisible(true);
+	}
+	
+	
 	private void fecharJanela() {
 		
 		this.dispose();
 		this.inicialWindow.setVisible(true);
 	}
 	
+	//=============================================================================================
+	
+	//Funções desta tela
+	
+	private String formatarData(String data) {
+		LocalDate dataFormatada = LocalDate.parse(data);
+		DateTimeFormatter formatacao = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		return dataFormatada.format(formatacao);
+	}
+	
+	public void buscarTodos() {
+		try {
+			DefaultTableModel modelo = (DefaultTableModel) tblPacientes.getModel();
+			modelo.setRowCount(0);
+			for(Paciente paciente: this.pacienteService.buscarTodos()) {
+				modelo.addRow(new Object[] {
+						paciente.getId_paciente(),
+						paciente.getNome(),
+						paciente.getSexo(),
+						formatarData(paciente.getdata_nascimento()),
+						paciente.getTelefone(),
+						paciente.getforma_pagamento()
+				});
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	//=============================================================================================
 	public void initComponents() {
 		
 		setTitle("Pacientes");
@@ -118,13 +172,14 @@ public class PacienteWindow extends JFrame {
 			new Object[][] {
 			},
 			new String[] {
-				"Foto", "Nome", "Sexo", "Data Nascimento", "Telefone", "Forma Pagamento"
+				"ID", "Nome", "Sexo", "Data Nascimento", "Telefone", "Forma Pagamento"
 			}
 		));
-		tblPacientes.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent event) {
-			}
-		});
+		tblPacientes.getColumnModel().getColumn(0).setPreferredWidth(39);
+		tblPacientes.getColumnModel().getColumn(2).setPreferredWidth(60);
+		tblPacientes.getColumnModel().getColumn(3).setPreferredWidth(112);
+		tblPacientes.getColumnModel().getColumn(4).setPreferredWidth(92);
+		tblPacientes.getColumnModel().getColumn(5).setPreferredWidth(108);
 		
 		btnCadastrar = new JButton("Cadastrar Novo");
 		btnCadastrar.addActionListener(new ActionListener() {
@@ -136,27 +191,22 @@ public class PacienteWindow extends JFrame {
 		contentPane.add(btnCadastrar);
 		
 		btnExcluir = new JButton("Apagar Registro");
+		btnExcluir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				abrirJanelaApagar();
+			}
+		});
 		btnExcluir.setBounds(294, 396, 152, 43);
 		contentPane.add(btnExcluir);
 		
 		btnEditar = new JButton("Editar Registro");
-		btnEditar.setEnabled(false);
 		btnEditar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int selectedRow = tblPacientes.getSelectedRow();
-				
-				if(selectedRow != -1) {
-					//pega os valores de das linhas
-				}else {
-					JOptionPane.showMessageDialog(null, "Por favor, selecione um registro para editar");
-				}
-				
+				editarRegistro();
 			}
 		});
 		btnEditar.setBounds(123, 396, 152, 43);
 		contentPane.add(btnEditar);
-		tblPacientes.getColumnModel().getColumn(3).setPreferredWidth(102);
-		tblPacientes.getColumnModel().getColumn(5).setPreferredWidth(108);
 		
 		setLocationRelativeTo(null);
 	}

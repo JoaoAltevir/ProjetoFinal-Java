@@ -1,13 +1,12 @@
 package entities;
 
-import java.sql.Date;
 
 public class Paciente {
 	
 	private int id_paciente;
 	private String nome;
 	private String foto_paciente;
-	private Date data_nascimento;
+	private String data_nascimento;
 	private char sexo;
 	private String telefone;
 	private String forma_pagamento;
@@ -15,7 +14,7 @@ public class Paciente {
 	
 	public Paciente() {	}
 
-	public Paciente(String nome, String foto_paciente, Date data_nascimento, char sexo,
+	public Paciente(String nome, String foto_paciente, String data_nascimento, char sexo,
 			String telefone, String forma_pagamento, Endereco endereco) {
 
 		this.nome = nome;
@@ -60,11 +59,11 @@ public class Paciente {
 		this.endereco = endereco;
 	}
 
-	public Date getdata_nascimento() {
+	public String getdata_nascimento() {
 		return data_nascimento;
 	}
 
-	public void setdata_nascimento(Date data_nascimento) {
+	public void setdata_nascimento(String data_nascimento) {
 		this.data_nascimento = data_nascimento;
 	}
 
@@ -94,16 +93,7 @@ public class Paciente {
 
 	@Override
 	public String toString() {
-	    return "Paciente {\n" +
-	           "  id=" + id_paciente + ",\n" +
-	           "  nome='" + nome + "',\n" +
-	           "  foto_paciente='" + foto_paciente + "',\n" +
-	           "  data_nascimento=" + data_nascimento + ",\n" +
-	           "  sexo='" + sexo + "',\n" +
-	           "  telefone='" + telefone + "',\n" +
-	           "  forma_pagamento='" + forma_pagamento + "',\n" +
-	           "  endereco='" + endereco + "'\n" +
-	           "}";
+	    return nome;
 	}
 	
 }

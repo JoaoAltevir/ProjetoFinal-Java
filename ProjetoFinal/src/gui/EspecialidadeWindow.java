@@ -16,6 +16,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.table.DefaultTableModel;
+
+import entities.Especialidade;
+import service.EspecialidadeService;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -23,9 +27,7 @@ public class EspecialidadeWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTable tblEspecialidade;
 	private JPanel painelEspecialidade;
-	private JScrollPane scrollPane;
 	private JMenu mnArquivo;
 	private JMenuBar menuBar;
 	private JButton btnApagarEspecialidade;
@@ -33,6 +35,9 @@ public class EspecialidadeWindow extends JFrame {
 
 	private InicialWindow telaInicial;
 	private JButton btnCadEspecialidade;
+	private JTable tableEspecialidade;
+	private JScrollPane spEspecialidade;
+	private EspecialidadeService especialidadeService;
 
 	
 	
@@ -45,8 +50,10 @@ public class EspecialidadeWindow extends JFrame {
 			}
 		});
 		
+		this.especialidadeService = new EspecialidadeService();
 		this.telaInicial = telaInicial;
 		this.initComponets();
+		this.buscarTodos();
 	}
 	
 	private void fecharJanela() {
@@ -63,6 +70,33 @@ public class EspecialidadeWindow extends JFrame {
 		
 	}
 	
+	private void abrirAtualizar() {
+		
+		EspecialidadeAtualizarWindow telaAtualizar = new EspecialidadeAtualizarWindow(this);
+		telaAtualizar.setVisible(true);
+	}
+	
+	private void abrirExcluir() {
+		
+		EspecialidadeExcluirWindow telaExcluir = new EspecialidadeExcluirWindow(this);
+		telaExcluir.setVisible(true);
+		
+	}
+	
+	public void buscarTodos() {
+		try {
+			DefaultTableModel modelo = (DefaultTableModel) this.tableEspecialidade.getModel();
+			modelo.setRowCount(0);
+			for (Especialidade especialidade: especialidadeService.buscarTodos()) {
+				modelo.addRow(new Object[] {
+					especialidade.getid_especialidade(),
+					especialidade.getnome_especialidade()
+				});
+			}	
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
 	public void initComponets() {
 		setTitle("Especialidades");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -81,23 +115,25 @@ public class EspecialidadeWindow extends JFrame {
 		
 		painelEspecialidade = new JPanel();
 		painelEspecialidade.setBorder(new TitledBorder(null, "Especialidades", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		painelEspecialidade.setBounds(27, 23, 162, 364);
+		painelEspecialidade.setBounds(27, 23, 226, 425);
 		contentPane.add(painelEspecialidade);
 		painelEspecialidade.setLayout(null);
 		
-		scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 22, 142, 331);
-		painelEspecialidade.add(scrollPane);
+		spEspecialidade = new JScrollPane();
+		spEspecialidade.setBounds(10, 21, 206, 393);
+		painelEspecialidade.add(spEspecialidade);
 		
-		tblEspecialidade = new JTable();
-		scrollPane.setViewportView(tblEspecialidade);
-		tblEspecialidade.setModel(new DefaultTableModel(
+		tableEspecialidade = new JTable();
+		tableEspecialidade.setModel(new DefaultTableModel(
 			new Object[][] {
 			},
 			new String[] {
-				"Nome"
+				"ID", "Nome"
 			}
 		));
+		tableEspecialidade.getColumnModel().getColumn(0).setPreferredWidth(37);
+		tableEspecialidade.getColumnModel().getColumn(0).setMinWidth(14);
+		spEspecialidade.setViewportView(tableEspecialidade);
 		
 		btnCadEspecialidade = new JButton("Cadastrar Especialidade");
 		btnCadEspecialidade.addActionListener(new ActionListener() {
@@ -106,17 +142,27 @@ public class EspecialidadeWindow extends JFrame {
 			}
 		});
 		btnCadEspecialidade.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		btnCadEspecialidade.setBounds(275, 80, 162, 73);
+		btnCadEspecialidade.setBounds(300, 86, 162, 73);
 		contentPane.add(btnCadEspecialidade);
 		
 		btnApagarEspecialidade = new JButton("Apagar Especialidade");
+		btnApagarEspecialidade.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				abrirExcluir();
+			}
+		});
 		btnApagarEspecialidade.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		btnApagarEspecialidade.setBounds(275, 164, 162, 73);
+		btnApagarEspecialidade.setBounds(300, 170, 162, 73);
 		contentPane.add(btnApagarEspecialidade);
 		
 		btnAtualizarEspecialidade = new JButton("Atualizar Especialidade");
+		btnAtualizarEspecialidade.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				abrirAtualizar();
+			}
+		});
 		btnAtualizarEspecialidade.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		btnAtualizarEspecialidade.setBounds(275, 248, 162, 73);
+		btnAtualizarEspecialidade.setBounds(300, 254, 162, 73);
 		contentPane.add(btnAtualizarEspecialidade);
 		
 		setLocationRelativeTo(null);

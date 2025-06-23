@@ -7,18 +7,26 @@ public class Consulta {
 	private int id_consulta;
     private Paciente paciente;
     private Medico medico;
-    private LocalDateTime data_hora;
+    private String data_hora;
     private boolean realizada;
     
 	public Consulta() {	}
 
-	public Consulta(Paciente paciente, Medico medico, LocalDateTime data_hora, boolean realizada) {
+	public Consulta(Paciente paciente, Medico medico, String data_hora, boolean realizada) {
 	
 		this.paciente = paciente;
 		this.medico = medico;
 		this.data_hora = data_hora;
 		this.realizada = realizada;
 		
+	}
+	
+	public String isRealizada() {
+		if(this.realizada == true) {
+			return "Realizada";
+		}else {
+			return "Não realizada";
+		}
 	}
 
 	public int getid_consulta() {
@@ -45,11 +53,11 @@ public class Consulta {
 		this.medico = medico;
 	}
 
-	public LocalDateTime getdata_hora() {
+	public String getdata_hora() {
 		return data_hora;
 	}
 
-	public void setdata_hora(LocalDateTime data_hora) {
+	public void setdata_hora(String data_hora) {
 		this.data_hora = data_hora;
 	}
 

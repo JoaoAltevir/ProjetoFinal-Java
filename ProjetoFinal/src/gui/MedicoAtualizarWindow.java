@@ -6,8 +6,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import entities.Paciente;
-import service.PacienteService;
+import entities.Medico;
+import service.MedicoService;
+
 
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -21,7 +22,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 
-public class PacienteEditarWindow extends JFrame {
+public class MedicoAtualizarWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -30,14 +31,16 @@ public class PacienteEditarWindow extends JFrame {
 	private JButton btnCancelar;
 	private JLabel lblTexto;
 	
-	private PacienteService pacienteService;
-	private PacienteWindow telaInicial;
+	private MedicoService medicoService;
+	private MedicoWindow telaInicial;
+	
+	
 
 	
 	private void abrirJanelaEditar() {
 		try {
-			Paciente paciente = this.pacienteService.buscarPacientePorID(Integer.parseInt(this.textID.getText()));
-			PacientesCadastroWindow telaEditar = new PacientesCadastroWindow(this.telaInicial, this, paciente);
+			Medico medico = this.medicoService.buscarMedicoPorID(Integer.parseInt(this.textID.getText()));
+			MedicoCadastroWindow telaEditar = new MedicoCadastroWindow(this.telaInicial, this, medico);
 			telaEditar.setVisible(true);
 			this.setVisible(false);
 		} catch (NumberFormatException e) {
@@ -53,7 +56,7 @@ public class PacienteEditarWindow extends JFrame {
 		
 	}
 	
-	public PacienteEditarWindow(PacienteWindow pacienteWindow) {
+	public MedicoAtualizarWindow(MedicoWindow medicoWindow) {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosed(WindowEvent e) {
@@ -61,8 +64,8 @@ public class PacienteEditarWindow extends JFrame {
 			}
 		});
 		
-		this.pacienteService = new PacienteService();
-		this.telaInicial = pacienteWindow;
+		this.medicoService = new MedicoService();
+		this.telaInicial = medicoWindow;
 		this.initComponents();
 	}
 	

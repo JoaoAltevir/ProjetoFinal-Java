@@ -8,21 +8,38 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.MaskFormatter;
+
+import entities.Endereco;
+import entities.Paciente;
+import service.EnderecoService;
+import service.PacienteService;
+
 import javax.swing.border.EtchedBorder;
 import java.awt.Color;
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Date;
+import java.sql.SQLException;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.JFormattedTextField;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -45,7 +62,6 @@ public class PacientesCadastroWindow extends JFrame {
 	private JRadioButton rbMasculino;
 	private JPanel painelSexo;
 	private JPanel painelPagamento;
-	private JComboBox cbPagamento;
 	private JLabel lblNome;
 	private JLabel lblTelefone;
 	private JLabel lblDataNascimento;
@@ -61,14 +77,30 @@ public class PacientesCadastroWindow extends JFrame {
 	private JMenuBar menuBar;
 	
 	private PacienteWindow pacienteWindow;
+	private PacienteEditarWindow pacienteEditarWindow;
+	private PacienteService pacienteService;
+	private EnderecoService enderecoService;
+	private Paciente pacienteEdit;
 	
 	private MaskFormatter mascaraData;
 	private MaskFormatter mascaraNumeroContato;
 	private final ButtonGroup bgSexo;
+	private final ButtonGroup bgPagamento;
+	private JTextField textCaminhoFoto;
+	private JButton btnFileChooser;
+	private JLabel lblFoto;
+	private JRadioButton rdbtnDinheiro;
+	private JRadioButton rdbtnPix;
+	private JRadioButton rdbtnDebito;
+	private JRadioButton rdbtnCredito;
+	private JTextField textID;
+	
 
 	
-	//TODO inserir foto no cadastro
 	
+	/**
+	 * @wbp.parser.constructor
+	 */
 	public PacientesCadastroWindow(PacienteWindow pacienteWindow) {
 		
 		addWindowListener(new WindowAdapter() {
@@ -78,12 +110,123 @@ public class PacientesCadastroWindow extends JFrame {
 			}
 		});
 		
+		this.enderecoService = new EnderecoService();
+		this.pacienteService = new PacienteService();
 		this.criarMascaraData();
 		this.criarMascaraNumeroContato();
 		this.bgSexo = new ButtonGroup();
-		this.initComponents();
+		this.bgPagamento = new ButtonGroup();
 		this.pacienteWindow = pacienteWindow;
+		this.initComponents();
+		this.textID.setText("");
 	}
+	
+	public PacientesCadastroWindow(PacienteWindow pacienteWindow, PacienteEditarWindow pacienteEditarWindow, Paciente paciente) {
+		
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				fecharJanela();
+			}
+		});
+		
+		this.pacienteEdit = paciente;
+		this.enderecoService = new EnderecoService();
+		this.pacienteService = new PacienteService();
+		this.criarMascaraData();
+		this.criarMascaraNumeroContato();
+		this.bgSexo = new ButtonGroup();
+		this.bgPagamento = new ButtonGroup();
+		this.pacienteWindow = pacienteWindow;
+		this.pacienteEditarWindow = pacienteEditarWindow;
+		this.initComponents();
+		
+		this.textID.setText(Integer.toString(this.pacienteEdit.getId_paciente()));
+		this.textNome.setText(this.pacienteEdit.getNome());
+		this.formattedText_Data.setText(formatarData(this.pacienteEdit.getdata_nascimento()));
+		this.formattedText_Telefone.setText(this.pacienteEdit.getTelefone());
+		this.textCaminhoFoto.setText(this.pacienteEdit.getfoto_paciente());
+		selecionarSexo();
+		selecionarFormaPagamento();
+		buscarFoto();
+		this.textBairro.setText(this.pacienteEdit.getEndereco().getBairro());
+		this.textCidade.setText(this.pacienteEdit.getEndereco().getCidade());
+		this.textEstado.setText(this.pacienteEdit.getEndereco().getEstado());
+		this.textLogradouro.setText(this.pacienteEdit.getEndereco().getLogradouro());
+		this.textNumeroCasa.setText(this.pacienteEdit.getEndereco().getNumero());
+
+	}
+	
+	//FUNÇÕES DE EDIÇÃO DE REGISTRO
+	private String formatarData(String data) {
+		LocalDate dataFormatada = LocalDate.parse(data);
+		DateTimeFormatter formatacao = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		return dataFormatada.format(formatacao);
+	}
+	
+	private void buscarFoto() {
+		
+		String caminhoFoto = this.pacienteEdit.getfoto_paciente();
+		ImageIcon previewFoto = new ImageIcon(caminhoFoto);
+    	Image foto = previewFoto.getImage().getScaledInstance(138, 110, Image.SCALE_SMOOTH);
+    	this.lblFoto.setIcon(new ImageIcon(foto));
+    	
+	}
+	
+	private void selecionarSexo() {
+		if(this.pacienteEdit.getSexo() == 'M') {
+			rbMasculino.setSelected(true);
+		}else if(this.pacienteEdit.getSexo() == 'F') {
+			rbFeminino.setSelected(true);
+		}
+	}
+	
+	private void selecionarFormaPagamento() {
+		if(this.pacienteEdit.getforma_pagamento().equals(rdbtnPix.getText())) {
+			rdbtnPix.setSelected(true);
+		}else if(this.pacienteEdit.getforma_pagamento().equals(rdbtnDebito.getText())) {
+			rdbtnDebito.setSelected(true);
+		}else if(this.pacienteEdit.getforma_pagamento().equals(rdbtnDinheiro.getText())) {
+			rdbtnDinheiro.setSelected(true);
+		}else if(this.pacienteEdit.getforma_pagamento().equals(rdbtnCredito.getText())) {
+			rdbtnCredito.setSelected(true);
+		}
+	}
+	
+	private void editar() {
+		try {
+			
+			this.pacienteEdit.setNome(this.textNome.getText());
+			this.pacienteEdit.setTelefone(this.formattedText_Telefone.getText());
+			this.pacienteEdit.setfoto_paciente(this.textCaminhoFoto.getText());
+			this.pacienteEdit.setdata_nascimento(converterData().toString());
+			this.pacienteEdit.setSexo(verificarSexo());
+			this.pacienteEdit.setforma_pagamento(verificarPagamento());
+			this.pacienteEdit.getEndereco().setCidade(this.textCidade.getText());
+			this.pacienteEdit.getEndereco().setBairro(this.textBairro.getText());
+			this.pacienteEdit.getEndereco().setEstado(this.textEstado.getText());
+			this.pacienteEdit.getEndereco().setLogradouro(this.textLogradouro.getText());
+			this.pacienteEdit.getEndereco().setNumero(this.textNumeroCasa.getText());
+			
+			this.enderecoService.atualizarEndereco(this.pacienteEdit.getEndereco());
+			
+			this.pacienteService.atualizarPaciente(this.pacienteEdit);
+			
+			JOptionPane.showMessageDialog(null, "Atualização feita com sucesso!");
+			limparComponentes();
+			this.pacienteWindow.buscarTodos();
+			this.fecharJanela();
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		} catch (IOException e) {
+		
+			e.printStackTrace();
+		}
+	}
+	
+	//================================================
 	
 	private void limparComponentes() {
 		
@@ -97,7 +240,9 @@ public class PacientesCadastroWindow extends JFrame {
 		this.textCidade.setText("");
 		this.rbFeminino.setSelected(false);
 		this.rbMasculino.setSelected(false);		
-		
+		this.textCaminhoFoto.setText("");
+		this.lblFoto.setIcon(null);
+
 	}
 	
 	private void criarMascaraData() {
@@ -125,6 +270,99 @@ public class PacientesCadastroWindow extends JFrame {
 		this.dispose();
 		this.pacienteWindow.setVisible(true);
 	}
+	
+	private void selecionarFoto() {
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Selecione uma imagem de perfil:");
+		fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+		
+		FileNameExtensionFilter filtroImagem = new FileNameExtensionFilter("Imagens (JPG, PNG, GIF)", "jpg", "jpeg", "png");
+        fileChooser.setFileFilter(filtroImagem);
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        
+        int resultado = fileChooser.showOpenDialog(null);
+        
+        if(resultado == JFileChooser.APPROVE_OPTION) {
+        	File fotoSelecionada = fileChooser.getSelectedFile();
+        	
+        	String caminhoFoto = fotoSelecionada.getAbsolutePath();
+        	
+        	this.textCaminhoFoto.setText(caminhoFoto);
+        	
+        	ImageIcon previewFoto = new ImageIcon(caminhoFoto);
+        	
+        	Image foto = previewFoto.getImage().getScaledInstance(138, 110, Image.SCALE_SMOOTH);
+        	this.lblFoto.setIcon(new ImageIcon(foto));
+      
+        }
+	}
+	
+	private LocalDate converterData() {
+		
+		DateTimeFormatter dataFormatada = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		return LocalDate.parse(this.formattedText_Data.getText(), dataFormatada);
+		
+	}
+	
+	private void cadastrar() {
+		try {
+			Paciente paciente = new Paciente();
+			Endereco endereco = new Endereco();
+			
+			paciente.setNome(this.textNome.getText());
+			paciente.setTelefone(this.formattedText_Telefone.getText());
+			paciente.setfoto_paciente(this.textCaminhoFoto.getText());
+			paciente.setdata_nascimento(converterData().toString());
+			paciente.setSexo(verificarSexo());
+			paciente.setforma_pagamento(verificarPagamento());
+			endereco.setCidade(this.textCidade.getText());
+			endereco.setBairro(this.textBairro.getText());
+			endereco.setEstado(this.textEstado.getText());
+			endereco.setLogradouro(this.textLogradouro.getText());
+			endereco.setNumero(this.textNumeroCasa.getText());
+			int idEndereco = this.enderecoService.cadastrar(endereco);
+			endereco.setId_endereco(idEndereco);		
+			paciente.setEndereco(endereco);
+			
+			this.pacienteService.cadastrar(paciente);
+			
+			JOptionPane.showMessageDialog(null, "Cadastro feito com sucesso!");
+			limparComponentes();
+			this.pacienteWindow.buscarTodos();
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		} catch (IOException e) {
+		
+			e.printStackTrace();
+		}
+	}
+	
+	
+	private char verificarSexo() {
+		if(rbMasculino.isSelected()) {
+			return 'M';
+		}else if(rbFeminino.isSelected()){
+			return 'F';
+		}
+		return 'N';
+	}
+	
+	private String verificarPagamento() {
+		if(rdbtnCredito.isSelected()) {
+			return this.rdbtnCredito.getText();
+		}else if(rdbtnDebito.isSelected()) {
+			return this.rdbtnDebito.getText();
+		}else if(rdbtnDinheiro.isSelected()) {
+			return this.rdbtnDinheiro.getText();
+		}else if(rdbtnPix.isSelected()) {
+			return this.rdbtnPix.getText();
+		}
+		
+		return "null";
+	}
+	
 	
 	
 	public void initComponents() {
@@ -235,11 +473,13 @@ public class PacientesCadastroWindow extends JFrame {
 		textNome.setColumns(10);
 		
 		JPanel painelFoto = new JPanel();
-		painelFoto.setBounds(489, 23, 123, 155);
+		painelFoto.setBounds(455, 17, 158, 132);
 		painelDados.add(painelFoto);
+		painelFoto.setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("foto");
-		painelFoto.add(lblNewLabel);
+		lblFoto = new JLabel("");
+		lblFoto.setBounds(10, 11, 138, 110);
+		painelFoto.add(lblFoto);
 		
 		lblDataNascimento = new JLabel("Data de Nascimento:");
 		lblDataNascimento.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -261,15 +501,54 @@ public class PacientesCadastroWindow extends JFrame {
 		
 		painelPagamento = new JPanel();
 		painelPagamento.setBorder(new TitledBorder(null, "Pagamento", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		painelPagamento.setBounds(177, 106, 201, 87);
+		painelPagamento.setBounds(156, 106, 201, 87);
 		painelDados.add(painelPagamento);
 		painelPagamento.setLayout(null);
 		
-		cbPagamento = new JComboBox();
-		cbPagamento.setBounds(10, 30, 181, 22);
-		painelPagamento.add(cbPagamento);
+		rdbtnPix = new JRadioButton("PIX");
+		bgPagamento.add(rdbtnPix);
+		rdbtnPix.setBounds(6, 19, 57, 23);
+		painelPagamento.add(rdbtnPix);
 		
-		btnCadastrar = new JButton("Cadastrar");
+		rdbtnDebito = new JRadioButton("Débito");
+		bgPagamento.add(rdbtnDebito);
+		rdbtnDebito.setBounds(6, 45, 57, 23);
+		painelPagamento.add(rdbtnDebito);
+		
+		rdbtnCredito = new JRadioButton("Crédito");
+		bgPagamento.add(rdbtnCredito);
+		rdbtnCredito.setBounds(65, 19, 109, 23);
+		painelPagamento.add(rdbtnCredito);
+		
+		rdbtnDinheiro = new JRadioButton("Dinheiro");
+		bgPagamento.add(rdbtnDinheiro);
+		rdbtnDinheiro.setBounds(65, 45, 109, 23);
+		painelPagamento.add(rdbtnDinheiro);
+		
+		textCaminhoFoto = new JTextField();
+		textCaminhoFoto.setBounds(455, 160, 158, 20);
+		painelDados.add(textCaminhoFoto);
+		textCaminhoFoto.setColumns(10);
+		
+		btnFileChooser = new JButton("Selecionar imagem...");
+		btnFileChooser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				selecionarFoto();     
+			}
+		});
+		btnFileChooser.setBounds(455, 181, 158, 23);
+		painelDados.add(btnFileChooser);
+		
+		btnCadastrar = new JButton("Atualizar/Cadastrar");
+		btnCadastrar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(textID.getText().equals("")) {
+					cadastrar();
+				}else{
+					editar();
+				}
+			}
+		});
 		btnCadastrar.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		btnCadastrar.setBounds(493, 441, 154, 39);
 		contentPane.add(btnCadastrar);
@@ -283,6 +562,13 @@ public class PacientesCadastroWindow extends JFrame {
 		btnLimparComponentes.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		btnLimparComponentes.setBounds(294, 441, 189, 39);
 		contentPane.add(btnLimparComponentes);
+		
+		textID = new JTextField();
+		textID.setBounds(23, 452, 86, 20);
+		textID.setVisible(false);
+		contentPane.add(textID);
+		textID.setColumns(10);
+	
 		
 		setLocationRelativeTo(null);
 	}

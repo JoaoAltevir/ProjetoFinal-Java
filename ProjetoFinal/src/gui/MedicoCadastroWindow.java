@@ -6,16 +6,33 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.MaskFormatter;
+
+import entities.Endereco;
+import entities.Especialidade;
+import entities.Medico;
+import service.EnderecoService;
+import service.EspecialidadeService;
+import service.MedicoService;
+
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.List;
 
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import java.awt.FlowLayout;
 import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class MedicoCadastroWindow extends JFrame {
 
@@ -43,9 +60,21 @@ public class MedicoCadastroWindow extends JFrame {
 	private JFormattedTextField ftextCRM;
 	private JFormattedTextField ftextTelefone;
 	private JLabel lblEspecialidade;
-	private JComboBox cbEspecialidade;
+	private JComboBox<Especialidade> cbEspecialidade;
+	private JTextField textID;
+	
+	private EnderecoService enderecoService;
+	private MedicoService medicoService;
+	private EspecialidadeService especialidadeService;
+	private MaskFormatter mascaraNumeroTelefone;
+	private MaskFormatter mascaraCRM;
+	private Medico medicoEdit;
+	private MedicoAtualizarWindow medicoAtualizarWindow;
 
 
+	/**
+	 * @wbp.parser.constructor
+	 */
 	public MedicoCadastroWindow(MedicoWindow medicoWindow) {
 		
 		addWindowListener(new WindowAdapter() {
@@ -55,14 +84,161 @@ public class MedicoCadastroWindow extends JFrame {
 			}
 		});
 		
-		this.initComponents();
+		criarMascaraNumeroTelefone();
+		criarMascaraCRM();
+		this.medicoService = new MedicoService();
+		this.enderecoService = new EnderecoService();
+		this.especialidadeService = new EspecialidadeService();
 		this.medicoWindow = medicoWindow;
+		this.initComponents();
+		inserirEspecialidades();
+		
 	}
 	
+	public MedicoCadastroWindow(MedicoWindow medicoWindow, MedicoAtualizarWindow medicoAtualizarWindow, Medico medico) {
+		
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				fecharJanela();
+			}
+		});
+		
+		this.medicoEdit = medico;
+		
+		criarMascaraNumeroTelefone();
+		criarMascaraCRM();
+		this.medicoService = new MedicoService();
+		this.enderecoService = new EnderecoService();
+		this.especialidadeService = new EspecialidadeService();
+		this.medicoAtualizarWindow = medicoAtualizarWindow;
+		this.medicoWindow = medicoWindow;
+		this.initComponents();
+		inserirEspecialidades();
+		
+		this.textID.setText(Integer.toString(this.medicoEdit.getid_medico()));
+		this.textNome.setText(this.medicoEdit.getnome_medico());
+		this.ftextCRM.setText(this.medicoEdit.getCrm());
+		this.ftextTelefone.setText(this.medicoEdit.getTelefone());
+		this.cbEspecialidade.setSelectedItem(this.medicoEdit.getEspecialidade());;;
+		this.textBairro.setText(this.medicoEdit.getEndereco().getBairro());
+		this.textCidade.setText(this.medicoEdit.getEndereco().getCidade());
+		this.textEstado.setText(this.medicoEdit.getEndereco().getEstado());
+		this.textLogradouro.setText(this.medicoEdit.getEndereco().getLogradouro());
+		this.textNumeroCasa.setText(this.medicoEdit.getEndereco().getNumero());
+		
+		
+	}
+	
+	
+	
+	private void criarMascaraCRM() {
+		try {
+			this.mascaraCRM = new MaskFormatter("######/UU");
+		} catch (ParseException e) {
+			System.out.println("ERRO: " + e.getMessage());
+		}
+	}
+	private void criarMascaraNumeroTelefone(){
+		try {
+			
+			this.mascaraNumeroTelefone = new MaskFormatter("(##)#####-####");
+		} catch (ParseException e) {
+			System.out.println("ERRO: " + e.getMessage());
+		}
+	}
+	
+	private void inserirEspecialidades() {
+		try {
+			List<Especialidade> listaEspecialidades = this.especialidadeService.buscarTodos();
+			
+			for(Especialidade especialidade: listaEspecialidades) {
+				this.cbEspecialidade.addItem(especialidade);		
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
 	private void fecharJanela() {
 		
 		this.dispose();
 		this.medicoWindow.setVisible(true);
+	}
+	
+	private void cadastrar() {
+		
+		try {
+			Medico medico = new Medico();
+			Endereco endereco = new Endereco();
+			
+			medico.setnome_medico(this.textNome.getText());
+			medico.setTelefone(this.ftextTelefone.getText());
+			medico.setCrm(this.ftextCRM.getText());
+			medico.setEspecialidade((Especialidade)this.cbEspecialidade.getSelectedItem());
+			endereco.setCidade(this.textCidade.getText());
+			endereco.setBairro(this.textBairro.getText());
+			endereco.setEstado(this.textEstado.getText());
+			endereco.setLogradouro(this.textLogradouro.getText());
+			endereco.setNumero(this.textNumeroCasa.getText());
+			int idEndereco;
+			idEndereco = this.enderecoService.cadastrar(endereco);
+			endereco.setId_endereco(idEndereco);
+			medico.setEndereco(endereco);
+			
+			this.medicoService.cadastrar(medico);
+			
+			JOptionPane.showMessageDialog(null, "Cadastro feito com sucesso!");
+			limparComponentes();
+			this.medicoWindow.buscarTodos();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void editar() {
+		try {
+			this.medicoEdit.setnome_medico(this.textNome.getText());
+			this.medicoEdit.setTelefone(this.ftextTelefone.getText());
+			this.medicoEdit.setCrm(this.ftextCRM.getText());
+			this.medicoEdit.setEspecialidade((Especialidade)this.cbEspecialidade.getSelectedItem());
+			this.medicoEdit.getEndereco().setCidade(this.textCidade.getText());
+			this.medicoEdit.getEndereco().setBairro(this.textBairro.getText());
+			this.medicoEdit.getEndereco().setEstado(this.textEstado.getText());
+			this.medicoEdit.getEndereco().setLogradouro(this.textLogradouro.getText());
+			this.medicoEdit.getEndereco().setNumero(this.textNumeroCasa.getText());
+			
+			this.enderecoService.atualizarEndereco(this.medicoEdit.getEndereco());
+			
+			this.medicoService.atualizar(medicoEdit);
+			
+			JOptionPane.showMessageDialog(null, "Tela atualizada com sucesso!");
+			limparComponentes();
+			this.medicoWindow.buscarTodos();
+			this.fecharJanela();
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+	
+	private void limparComponentes() {
+		
+		this.textNome.setText("");
+		this.textID.setText("");
+		this.ftextCRM.setText("");
+		this.ftextTelefone.setText("");
+		this.textBairro.setText("");
+		this.textCidade.setText("");
+		this.textLogradouro.setText("");
+		this.textNumeroCasa.setText("");
+		this.textEstado.setText("");
+		this.cbEspecialidade.setSelectedIndex(0);
+		
 	}
 	private void initComponents() {
 		setTitle("Cadastro de Médicos");
@@ -105,15 +281,15 @@ public class MedicoCadastroWindow extends JFrame {
 		painelDados.add(textNome);
 		textNome.setColumns(10);
 		
-		cbEspecialidade = new JComboBox();
+		cbEspecialidade = new JComboBox<Especialidade>();
 		cbEspecialidade.setBounds(353, 72, 175, 22);
 		painelDados.add(cbEspecialidade);
 		
-		ftextTelefone = new JFormattedTextField();
+		ftextTelefone = new JFormattedTextField(mascaraNumeroTelefone);
 		ftextTelefone.setBounds(89, 73, 165, 20);
 		painelDados.add(ftextTelefone);
 		
-		ftextCRM = new JFormattedTextField();
+		ftextCRM = new JFormattedTextField(mascaraCRM);
 		ftextCRM.setBounds(59, 103, 56, 20);
 		painelDados.add(ftextCRM);
 		
@@ -178,10 +354,25 @@ public class MedicoCadastroWindow extends JFrame {
 		btnLimparComponentes.setBounds(271, 389, 189, 39);
 		contentPane.add(btnLimparComponentes);
 		
-		btnCadastrar = new JButton("Cadastrar");
+		btnCadastrar = new JButton("Cadastrar/Atualizar");
+		btnCadastrar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(textID.getText().equals("")) {
+					cadastrar();
+				}else {
+					editar();
+				}
+			}
+		});
 		btnCadastrar.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		btnCadastrar.setBounds(470, 389, 154, 39);
 		contentPane.add(btnCadastrar);
+		
+		textID = new JTextField();
+		textID.setVisible(false);
+		textID.setBounds(46, 400, 86, 20);
+		contentPane.add(textID);
+		textID.setColumns(10);
 		
 		setLocationRelativeTo(null);
 	}

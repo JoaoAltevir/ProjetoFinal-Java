@@ -31,10 +31,7 @@ public class Especialidade {
 
 	@Override
 	public String toString() {
-	    return "Especialidade {\n" +
-	           "  id=" + id_especialidade + ",\n" +
-	           "  nome_especialidade='" + nome_especialidade + "'\n" +
-	           "}";
+	    return this.nome_especialidade;
 	}
 	
 	

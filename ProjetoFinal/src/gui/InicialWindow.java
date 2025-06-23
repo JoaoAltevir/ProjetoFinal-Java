@@ -44,10 +44,26 @@ public class InicialWindow extends JFrame {
 		
 	}
 	
+	private void abrirJanelaExame() {
+		
+		ExameWindow janelaExame = new ExameWindow(this);
+		janelaExame.setVisible(true);
+		
+		this.setVisible(false);
+	}
+	
 	private void abrirJanelaMedico() {
 		
 		MedicoWindow janelaMedico = new MedicoWindow(this);
 		janelaMedico.setVisible(true);
+		
+		this.setVisible(false);
+	}
+	
+	private void abrirJanelaConsulta() {
+		
+		AgendarConsultaWindow janelaConsulta = new AgendarConsultaWindow(this);
+		janelaConsulta.setVisible(true);
 		
 		this.setVisible(false);
 	}
@@ -72,7 +88,7 @@ public class InicialWindow extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		btnCadPaciente = new JButton("Cadastrar Pacientes");
+		btnCadPaciente = new JButton("Pacientes");
 		btnCadPaciente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -82,7 +98,7 @@ public class InicialWindow extends JFrame {
 		btnCadPaciente.setBounds(225, 59, 187, 60);
 		contentPane.add(btnCadPaciente);
 		
-		btnCadEspecialidade = new JButton("Cadastrar Especialidade");
+		btnCadEspecialidade = new JButton("Especialidades");
 		btnCadEspecialidade.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				abrirJanelaEspecialidade();
@@ -93,7 +109,7 @@ public class InicialWindow extends JFrame {
 		btnCadEspecialidade.setBounds(225, 134, 187, 60);
 		contentPane.add(btnCadEspecialidade);
 		
-		btnCadMedico = new JButton("Cadastrar Médico");
+		btnCadMedico = new JButton("Médicos");
 		btnCadMedico.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				abrirJanelaMedico();
@@ -106,7 +122,7 @@ public class InicialWindow extends JFrame {
 		btnAgendarConsulta.addActionListener(new ActionListener() {
                             @Override
                             public void actionPerformed(ActionEvent e) {
-                            //TODO tela de agendamento TELA DE CONSULTAS (listando todas as consultas), (cadastro de consulta), (apagar cadastro)
+                            abrirJanelaConsulta();
 			}
 		});
 		btnAgendarConsulta.setBounds(225, 280, 187, 60);
@@ -124,7 +140,7 @@ public class InicialWindow extends JFrame {
 		btnExames = new JButton("Exames");
 		btnExames.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//TODO telas: (exames disponiveis no sistema), (cadastrar novo exame), (apagar exame)
+				abrirJanelaExame();
 			}
 		});
 		btnExames.setBounds(225, 429, 187, 60);

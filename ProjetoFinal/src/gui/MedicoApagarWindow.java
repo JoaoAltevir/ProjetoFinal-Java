@@ -6,10 +6,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import entities.Paciente;
-import service.PacienteService;
+import service.MedicoService;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -20,8 +21,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-
-public class PacienteEditarWindow extends JFrame {
+public class MedicoApagarWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -30,16 +30,40 @@ public class PacienteEditarWindow extends JFrame {
 	private JButton btnCancelar;
 	private JLabel lblTexto;
 	
-	private PacienteService pacienteService;
-	private PacienteWindow telaInicial;
+	private MedicoService medicoService;
+	private MedicoWindow medicoWindow;
 
 	
-	private void abrirJanelaEditar() {
+	public MedicoApagarWindow(MedicoWindow medicoWindow) {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				fecharJanela();
+			}
+		});
+		
+		this.medicoService = new MedicoService();
+		this.medicoWindow = medicoWindow;
+		this.initComponents();
+	}
+	
+	private void limparCampo() {
+		
+		this.textID.setText("");
+	}
+
+	private void fecharJanela() {
+		
+		this.dispose();
+		this.medicoWindow.setVisible(true);
+	}
+	
+	private void excluirRegistro() {
 		try {
-			Paciente paciente = this.pacienteService.buscarPacientePorID(Integer.parseInt(this.textID.getText()));
-			PacientesCadastroWindow telaEditar = new PacientesCadastroWindow(this.telaInicial, this, paciente);
-			telaEditar.setVisible(true);
-			this.setVisible(false);
+			this.medicoService.excluirMedico(Integer.parseInt(this.textID.getText()));
+			JOptionPane.showMessageDialog(null, "Registro excluído com sucesso!");
+			limparCampo();
+			this.medicoWindow.buscarTodos();
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -50,55 +74,41 @@ public class PacienteEditarWindow extends JFrame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-	}
-	
-	public PacienteEditarWindow(PacienteWindow pacienteWindow) {
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosed(WindowEvent e) {
-				fecharJanela();
-			}
-		});
-		
-		this.pacienteService = new PacienteService();
-		this.telaInicial = pacienteWindow;
-		this.initComponents();
-	}
-	
-	private void fecharJanela() {
-		this.dispose();
-		
-		this.telaInicial.setVisible(true);
 	}
 	
 	private void initComponents() {
-		setTitle("Editar");
+		setTitle("Excluir paciente");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 335, 208);
+		setBounds(100, 100, 404, 248);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		lblTexto = new JLabel("Informe o ID do paciente que deseja alterar:");
+		lblTexto = new JLabel("Informe o ID do médico que deseja apagar o registro:");
 		lblTexto.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblTexto.setBounds(10, 41, 281, 26);
+		lblTexto.setBounds(10, 51, 339, 23);
 		contentPane.add(lblTexto);
 		
 		textID = new JTextField();
-		textID.setBounds(10, 83, 86, 20);
+		textID.setBounds(10, 85, 86, 20);
 		contentPane.add(textID);
 		textID.setColumns(10);
 		
 		btnConfirmar = new JButton("Confirmar");
 		btnConfirmar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				abrirJanelaEditar();
+				int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir?", "Atenção", JOptionPane.YES_NO_OPTION);
+				if(confirmacao == JOptionPane.YES_OPTION) {
+					excluirRegistro();
+				}else {
+					fecharJanela();
+				}
 			}
 		});
-		btnConfirmar.setBounds(202, 135, 89, 23);
+		btnConfirmar.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		btnConfirmar.setBounds(271, 175, 107, 23);
 		contentPane.add(btnConfirmar);
 		
 		btnCancelar = new JButton("Cancelar");
@@ -107,9 +117,10 @@ public class PacienteEditarWindow extends JFrame {
 				fecharJanela();
 			}
 		});
-		btnCancelar.setBounds(103, 135, 89, 23);
+		btnCancelar.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		btnCancelar.setBounds(172, 175, 89, 23);
 		contentPane.add(btnCancelar);
-		
-		setLocationRelativeTo(null);
 	}
+
 }
+

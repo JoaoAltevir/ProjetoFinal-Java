@@ -4,6 +4,8 @@ import java.awt.EventQueue;
 import java.awt.JobAttributes.DefaultSelectionType;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -14,6 +16,10 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import entities.Medico;
+import service.MedicoService;
+
 import javax.swing.JButton;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
@@ -39,6 +45,7 @@ public class MedicoWindow extends JFrame {
 	private JMenuItem mntmVoltar;
 	private JMenu mnArquivo;
 	private JButton btnEditar;
+	private MedicoService medicoService;
 	
 	public MedicoWindow(InicialWindow inicialWindow) {
 		
@@ -49,19 +56,22 @@ public class MedicoWindow extends JFrame {
 			}
 		});
 		
-		this.initComponents();
+		this.medicoService = new MedicoService();
 		this.inicialWindow = inicialWindow;
+		this.initComponents();
+		buscarTodos();
+		
+		
 		
 	}
 	
-//	private void abrirJanelaEditar() {
-//		
-//		PacienteEditarWindow telaEditar = new (this);
-//		//TODO mandar dados do paciente selecionado.
-//		telaEditar.setVisible(true);
-//		
-//		this.setVisible(false);
-//	}
+	private void abrirJanelaEditar() {
+		
+		MedicoAtualizarWindow telaEditar = new MedicoAtualizarWindow(this);
+		telaEditar.setVisible(true);
+		
+		this.setVisible(false);
+	}
 	
 	private void abrirJanelaCadastro() {
 		
@@ -70,6 +80,37 @@ public class MedicoWindow extends JFrame {
 		
 		this.setVisible(false);
 		
+	}
+	
+	private void abrirJanelaExcluir() {
+		
+		MedicoApagarWindow telaExcluir = new MedicoApagarWindow(this);
+		telaExcluir.setVisible(true);
+		
+		this.setVisible(false);
+	}
+	
+	public void buscarTodos() {
+		try {
+			DefaultTableModel modelo = (DefaultTableModel) tblPacientes.getModel();
+			modelo.setRowCount(0);
+			for(Medico medico: this.medicoService.buscarTodos()) {
+				modelo.addRow(new Object[] {
+						medico.getid_medico(),
+						medico.getCrm(),
+						medico.getnome_medico(),
+						medico.getTelefone(),
+						medico.getEspecialidade().getnome_especialidade()
+				});
+				
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void fecharJanela() {
@@ -120,6 +161,7 @@ public class MedicoWindow extends JFrame {
 			new Object[][] {
 			},
 			new String[] {
+				"ID", "CRM", "Nome", "Telefone", "Especialidade"
 			}
 		));
 		tblPacientes.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -137,21 +179,18 @@ public class MedicoWindow extends JFrame {
 		contentPane.add(btnCadastrar);
 		
 		btnExcluir = new JButton("Apagar Registro");
+		btnExcluir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				abrirJanelaExcluir();
+			}
+		});
 		btnExcluir.setBounds(294, 396, 152, 43);
 		contentPane.add(btnExcluir);
 		
 		btnEditar = new JButton("Editar Registro");
-		btnEditar.setEnabled(false);
 		btnEditar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int selectedRow = tblPacientes.getSelectedRow();
-				
-				if(selectedRow != -1) {
-					//pega os valores de das linhas
-				}else {
-					JOptionPane.showMessageDialog(null, "Por favor, selecione um registro para editar");
-				}
-				
+				abrirJanelaEditar();
 			}
 		});
 		btnEditar.setBounds(123, 396, 152, 43);

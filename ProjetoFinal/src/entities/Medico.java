@@ -71,14 +71,7 @@ public class Medico {
 	
 	@Override
 	public String toString() {
-	    return "Medico {\n" +
-	           "  id=" + id_medico + ",\n" +
-	           "  crm='" + crm + "',\n" +  
-	           "  nome_medico='" + nome_medico + "',\n" +
-	           "  endereco='" + endereco + "',\n" +
-	           "  telefone='" + telefone + "',\n" +
-	           "  especialidade=" + especialidade + "\n" +
-	           "}";
+	    return nome_medico;
 	}
     
 
