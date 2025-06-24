@@ -63,6 +63,7 @@ public class ExameDAO {
         } finally {
             BancoDados.finalizarStatement(st);
             BancoDados.finalizarResultSet(rs);
+            BancoDados.desconectar();
         }
     }
 

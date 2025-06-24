@@ -55,6 +55,28 @@ public class ExameWindow extends JFrame {
 		this.exameService = new ExameService();
 		this.telaInicial = inicialWindow;
 		this.initComponents();
+		buscarTodos();
+	}
+	
+	public void buscarTodos() {		
+		try {
+			DefaultTableModel modelo = (DefaultTableModel) this.tblExames.getModel();
+			modelo.setRowCount(0);
+			for(Exame exame: this.exameService.buscarTodos()) {
+				modelo.addRow(new Object[] {
+						exame.getid_exame(),
+						exame.getnome_exame(),
+						exame.getValor(),
+						exame.getOrientacoes()
+				});
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void fecharJanela() {
@@ -71,7 +93,7 @@ public class ExameWindow extends JFrame {
 			exame.setValor(Double.parseDouble(this.textValor.getText()));
 			this.exameService.cadastrar(exame);
 			JOptionPane.showMessageDialog(this, "Exame cadastrado com sucesso!");
-			//this.buscarTodos();
+			this.buscarTodos();
 		} catch (SQLException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -79,6 +101,13 @@ public class ExameWindow extends JFrame {
 			JOptionPane.showMessageDialog(null, "Insira o valor em decimal com '.' e não com ',' ");
 		}
 		
+		
+	}
+	
+	private void apagarRegistro() {
+		
+		ExameExcluirWindow telaExcluir = new ExameExcluirWindow(this);
+		telaExcluir.setVisible(true);
 		
 	}
 	
@@ -131,6 +160,11 @@ public class ExameWindow extends JFrame {
 		contentPane.add(btnAtualizar);
 		
 		btnApagar = new JButton("Apagar");
+		btnApagar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				apagarRegistro();
+			}
+		});
 		btnApagar.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		btnApagar.setBounds(292, 425, 109, 23);
 		contentPane.add(btnApagar);

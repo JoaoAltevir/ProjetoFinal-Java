@@ -47,8 +47,8 @@ public class AgendarConsultaWindow extends JFrame {
 	private JButton btnCadastrar;
 	private JFormattedTextField ftextHora;
 	private JFormattedTextField ftextData;
-	private JComboBox cbPacientes;
-	private JComboBox cbMedico;
+	private JComboBox<Paciente> cbPacientes;
+	private JComboBox<Medico> cbMedico;
 	private JPanel painelConsultas;
 	private JScrollPane spConsultas;
 	
@@ -216,14 +216,14 @@ public class AgendarConsultaWindow extends JFrame {
             consulta.setPaciente(paciente);
             consulta.setrealizada(false);
             
-            if(this.consultaService.verificarDiaConsulta(consulta) != null) {
+            if(this.consultaService.verificarDiaConsulta(consulta) == null) {
             	JOptionPane.showMessageDialog(null, "Consulta nessa data já está cadastrada!");
             	return;
             }
             this.consultaService.cadastrar(consulta);
-            this.atualizarTabelaConsultas(medico);
             limparCampos();
             JOptionPane.showMessageDialog(null, "Consulta cadastrada com sucesso!");
+            this.medicoSelecionado();
 		} catch (Exception e) {
 	        e.printStackTrace(); 
 	        JOptionPane.showMessageDialog(this, "Ocorreu um erro ao agendar a consulta:\n" + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);

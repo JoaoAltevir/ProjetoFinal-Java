@@ -78,6 +78,7 @@ public class PacienteDAO {
         } finally {
             BancoDados.finalizarStatement(st);
             BancoDados.finalizarResultSet(rs);
+            BancoDados.desconectar();
         }
     }
 

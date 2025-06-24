@@ -75,6 +75,7 @@ public class MedicoDAO {
         } finally {
             BancoDados.finalizarStatement(st);
             BancoDados.finalizarResultSet(rs);
+            BancoDados.desconectar();
         }
     }
 
